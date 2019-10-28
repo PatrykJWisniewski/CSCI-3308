@@ -90,7 +90,20 @@ The method should do all the validations as stated in rule 1.
 function begin_play(){
 	if(document.getElementById("player1_id").value.length == 0 || document.getElementById("player2_id").value.length == 0){
 		alert("Two player game, both fields are mandatory");
-		return;
+	}
+	else if(started == true){
+		alert("Already started. Please click Reset Play to start again.");
+	}
+	else
+	{
+		document.getElementById("player1_id").disabled = true;
+		document.getElementById("player1_id").value = document.getElementById("player1_id").value + " (X)";
+		document.getElementById("player2_id").disabled = true;
+		document.getElementById("player2_id").value = document.getElementById("player2_id").value + " (O)";
+
+		started = true;
+		turn = 0;
+		document.getElementById("turn_info").innerHTML = "Turn for : " + "X".bold();
 	}
 
 	console.log("logging hard");
@@ -108,7 +121,22 @@ Remember to set the strated flag as false
 
 */
 function reset_play(){
+	console.log("Reset");
 
+	document.getElementById("player1_id").disabled = false;
+	document.getElementById("player1_id").value = "";
+	document.getElementById("player2_id").disabled = false;
+	document.getElementById("player2_id").value = "";
+	document.getElementById("move_text_id").value = "";
+
+	started = false;
+	document.getElementById("turn_info").innerHTML = "Game has not begin.";
+
+	for(let i = 0; i<table_ids.length; i++)
+	{
+		document.getElementById(table_ids[i]).innerText = table_ids[i];
+		board_state[i] = -1;
+	}
 }
 
 /*
@@ -128,7 +156,105 @@ The method should do all the things as stated in rule 2.
 
 */
 function play() {
-	
+	let acceptableAnswer = /[A-C]{1}[1-3]{1}/g;
+	let input = document.getElementById("move_text_id").value;
+
+	if(game_started() === false){
+		alert("The game has not started");
+	}
+	else if(input.match(acceptableAnswer)){
+		console.log("Answer is OK");
+		if(document.getElementById(input).innerText === "X" || document.getElementById(input).innerText === "O")
+		{
+			alert("Invalid Move - Spot already filled");
+			return;
+		}
+		else if(turn === 0) {
+			document.getElementById(input).innerText = "X";
+			document.getElementById("turn_info").innerHTML = "Turn for : " + "O".bold();
+			turn = 1;
+		}
+		else {
+			document.getElementById(input).innerText = "O";
+			document.getElementById("turn_info").innerHTML = "Turn for : " + "X".bold();
+			turn = 0;
+		}
+
+		for(let j = 0; j<table_ids.length; j++)
+		{
+			if(document.getElementById(table_ids[j]).innerText === "X")
+			{
+				board_state[j] = 0;
+			}
+			else if(document.getElementById(table_ids[j]).innerText === "O")
+			{
+				board_state[j] = 1;
+			}
+		}
+
+		let gameWon = false;
+
+		for(let i = 0; i < 9; i += 3)
+		{
+			if(board_state[i] === -1 || board_state[i+1] === -1 || board_state[i+2] === -1)
+			{
+				console.log("H Row at " + i + " no win");
+			}
+			else if(board_state[i] === board_state[i+1] && board_state[i] === board_state[i+2] && board_state[i+1] === board_state[i+2])
+			{
+				gameWon = true;
+			}
+		}
+
+		for(let i = 0; i < 3; i += 1)
+		{
+			if(board_state[i] === -1 || board_state[i+3] === -1 || board_state[i+6] === -1)
+			{
+				console.log("V Row at " + i + " no win");
+			}
+			else if(board_state[i] === board_state[i+3] && board_state[i] === board_state[i+6] && board_state[i+3] === board_state[i+6])
+			{
+				gameWon = true;
+			}
+		}
+
+		if(board_state[0] === -1 || board_state[4] === -1 || board_state[8] === -1)
+		{
+			console.log("D Row at " + 0 + " no win");
+		}
+		else if(board_state[0] === board_state[4] && board_state[0] === board_state[8] && board_state[4] === board_state[8])
+		{
+			gameWon = true;
+		}
+
+		if(board_state[2] === -1 || board_state[4] === -1 || board_state[6] === -1)
+		{
+			console.log("D Row at " + 0 + " no win");
+		}
+		else if(board_state[2] === board_state[4] && board_state[2] === board_state[6] && board_state[4] === board_state[6])
+		{
+			gameWon = true;
+		}
+
+		console.log(gameWon);
+
+		if(turn === 0 && gameWon)
+		{
+			alert("Winner is : O");
+			reset_play();
+		}
+		else if (turn === 1 && gameWon)
+		{
+			alert("Winner is : X");
+			reset_play();
+		}
+
+		console.log(board_state);
+	}
+	else
+	{
+		alert("Invalid Move");
+	}
 }
 
 /*
