@@ -1,0 +1,73 @@
+//- player-info.pug
+include ../partials/header.pug
+include ../partials/menu.pug
+
+div.container
+  br
+  div.row
+    div.col-4
+      div.card
+        //- TODO: Modify the pug code below to conditionally set the image_src
+        - let image_src = '../../resources/img/helmet.jpg'
+          if (playerInfo)
+            - image_src= playerInfo[0].img_src
+
+      img.card-img-top#player_img(src= image_src, alt="Football Player")
+      div.card-body.mx-auto
+        form.form(action="/player_info/post", method="get")
+          select.custom-select(name="player_choice", onchange="this.form.submit()")
+            option(selected value=-1) Select Player
+            //- TODO: Populate the select with player options. Set the value to the player's id and display the player's name.
+            for item in data
+              if(playerInfo)
+                if (item.id == playerInfo[0].id)
+                  option(selected=true value=item.id)= item.name
+                else
+                  option(selected=false value=item.id)= item.name
+              else
+                option(value=item.id)= item.name
+    div.col-8
+      div.table-responsive
+        table.table
+          tr
+            th Year
+            if (playerInfo)
+              td= playerInfo[0].year
+            else
+              td ?
+
+          tr
+            th Major
+            if (playerInfo)
+              td= playerInfo[0].major
+            else
+              td ?
+          tr
+            th Games Played
+            if (playerGames)
+              td= playerGames[0].count
+            else
+              td ?
+          tr
+            if (playerInfo)
+              td= 'Passing Yards: ' + playerInfo[0].passing_yards
+              td= 'Avg. Passing Yards: ' + playerPassAvg
+            else
+              td Passing Yards:
+              td Avg. Passing Yards:
+          tr
+            if (playerInfo)
+              td= 'Rushing Yards: ' + playerInfo[0].rushing_yards
+              td= 'Avg. Rushing Yards: ' + playerRushAvg
+            else
+              td Rushing Yards:
+              td Avg. Rushing Yards
+          tr
+            if (playerInfo)
+              td= 'Receiving Yards: ' + playerInfo[0].receiving_yards
+              td= 'Avg. Receiving Yards: ' + playerReceAvg
+            else
+              td Receiving Yards:
+              td Avg. Receiving Yards:
+
+include ../partials/footer.pug
